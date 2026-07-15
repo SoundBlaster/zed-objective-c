@@ -29,7 +29,7 @@ On macOS, installing Xcode or the Xcode Command Line Tools normally provides
 
 1. Open Zed's Command Palette.
 2. Run `zed: install dev extension`.
-3. Select this `zed-objective-c-extension` directory.
+3. Select the root of this repository.
 4. Open `test/fixtures/sample.m` and verify that the language selector shows
    `Objective-C`.
 
@@ -55,6 +55,35 @@ C++, and Objective-C. In an Objective-C-only project, add a project-local
 }
 ```
 
+## Recommended Zed settings
+
+Zed enables LSP on-type formatting by default. Because `clangd` advertises
+that capability, it may reformat incomplete Objective-C expressions while you
+are typing—for example, immediately after inserting a line break or a trigger
+character. To keep clangd completion, diagnostics, navigation, rename, hover,
+references, and semantic highlighting without automatic formatting during
+typing, disable on-type formatting for Objective-C:
+
+```json
+{
+  "file_types": {
+    "Objective-C": ["h"]
+  },
+  "languages": {
+    "Objective-C": {
+      "semantic_tokens": "combined",
+      "use_on_type_format": false
+    }
+  }
+}
+```
+
+The `file_types` entry is optional and should only be used when the project's
+`.h` files are Objective-C headers. `use_on_type_format` is independent of
+`format_on_save`; disabling it does not disable manual formatting. Use a
+project-level `.clang-format` if manual formatting should follow a specific
+style.
+
 Objective-C++ (`.mm`) is also intentionally not claimed yet. The upstream
 grammar extends Tree-sitter's C grammar, not its C++ grammar, so treating `.mm`
 as fully supported would misparse C++ constructs such as namespaces and
@@ -64,22 +93,16 @@ mode for C++-heavy `.mm` files.
 ## clangd and Xcode
 
 The extension starts `clangd` with Objective-C-friendly defaults, including
-background indexing and `#import` insertion. It does not hard-code an SDK or
-deployment target: those must come from the application's compilation database.
+background indexing and `#import` insertion. It does not hard-code an SDK,
+deployment target, header maps, or framework search paths: those must come from
+the application's `compile_commands.json`.
 
-For the accompanying `ZedObjC` Xcode project, generate that database from exact
-Xcode compiler invocations:
-
-```sh
-brew install xcode-build-server
-../scripts/generate-compile-commands.sh
-```
-
-The script keeps Xcode's response files and header maps under
-`.clangd-cache/`, validates the generated JSON, and atomically installs
-`compile_commands.json` at the repository root. A compilation database can
-still be generated while source code contains errors; the script reports the
-original Xcode build status separately.
+For an Xcode project, generate the compilation database from the project's real
+compiler invocations with a tool such as
+[`xcode-build-server`](https://github.com/SolaWing/xcode-build-server), and put
+`compile_commands.json` at the project or worktree root. Regenerate it after
+changing the scheme, SDK, target, or build settings, then restart the Objective-C
+language server in Zed.
 
 Override the clangd binary or arguments through Zed settings when necessary:
 

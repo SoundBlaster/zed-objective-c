@@ -18,7 +18,6 @@ tests fully reproducible.
 - [x] Vim text objects.
 - [x] Objective-C snippets.
 - [x] `clangd` language server adapter.
-- [x] Generation of `compile_commands.json` from real Xcode invocations.
 - [x] Tree-sitter regression corpus with six fixtures.
 - [x] Native and `wasm32-wasip2` Rust builds.
 - [x] GitHub Actions validation.
@@ -43,7 +42,7 @@ in command-line tests.
 
 ### Tasks
 
-- [ ] Reinstall `zed-objective-c-extension` as a dev extension.
+- [ ] Reinstall the repository root as a dev extension.
 - [ ] Verify automatic detection for `.m` and `.h`.
 - [ ] Inspect syntax captures with `dev: open highlights tree view`.
 - [ ] Verify semantic tokens for types, methods, properties, parameters, and
@@ -65,30 +64,26 @@ in command-line tests.
 - Navigation and completion work for UIKit and project symbols.
 - Every item in `MANUAL_TESTING.md` passes on the current stable Zed release.
 
-## Phase 6 — Green Xcode and clangd Pipeline
+## Phase 6 — Reproducible clangd Integration
 
 **Priority:** P0
 
-**Goal:** The sample application and semantic checks must complete without
-unexpected diagnostics.
+**Goal:** Validate semantic features without keeping a disposable Xcode
+application in the extension repository.
 
 ### Tasks
 
-- [ ] Move the intentional `[self tes]` error from the sample application into
-      a negative fixture.
-- [ ] Restore a successful `xcodebuild` for `ZedObjC`.
 - [ ] Add `scripts/test-clangd.sh`.
-- [ ] Validate the presence and structure of `compile_commands.json`.
-- [ ] Run `clangd --check` for every project `.m` and `.h` file.
+- [ ] Generate a temporary compilation database for semantic test fixtures.
+- [ ] Run `clangd --check` for every semantic fixture.
 - [ ] Separate positive checks from intentional negative diagnostics.
-- [ ] Document regeneration after changes to the scheme, SDK, or build flags.
+- [ ] Document compilation-database generation for external Xcode projects.
 - [ ] Consider a separate manual or nightly macOS CI job for Xcode integration.
 
 ### Success Metrics
 
-- `xcodebuild` exits with status `0`.
 - `scripts/test-clangd.sh` exits with status `0`.
-- Positive project files contain no unexpected diagnostics.
+- Positive semantic fixtures contain no unexpected diagnostics.
 - Negative fixtures assert the exact diagnostic and its location.
 
 ## Phase 7 — Regression Corpus and Query Polish
@@ -149,8 +144,7 @@ resilience to incomplete code.
 
 ### Repository Preparation
 
-- [ ] Move the extension into a standalone Git repository or explicitly adopt
-      a monorepo strategy.
+- [x] Keep the extension manifest and runtime resources at the repository root.
 - [x] Set the real `repository` URL in `extension.toml`.
 - [ ] Add `CHANGELOG.md` and a release policy.
 - [ ] Add syntax and semantic highlighting screenshots.

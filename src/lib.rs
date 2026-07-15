@@ -39,11 +39,7 @@ impl zed::Extension for ObjectiveCExtension {
             env.extend(extra_env);
         }
 
-        Ok(zed::Command {
-            command,
-            args,
-            env,
-        })
+        Ok(zed::Command { command, args, env })
     }
 
     fn language_server_initialization_options(
@@ -51,11 +47,10 @@ impl zed::Extension for ObjectiveCExtension {
         language_server_id: &LanguageServerId,
         worktree: &zed::Worktree,
     ) -> Result<Option<zed::serde_json::Value>> {
-        Ok(zed::settings::LspSettings::for_worktree(
-            language_server_id.as_ref(),
-            worktree,
-        )?
-        .initialization_options)
+        Ok(
+            zed::settings::LspSettings::for_worktree(language_server_id.as_ref(), worktree)?
+                .initialization_options,
+        )
     }
 
     fn language_server_workspace_configuration(
@@ -63,11 +58,10 @@ impl zed::Extension for ObjectiveCExtension {
         language_server_id: &LanguageServerId,
         worktree: &zed::Worktree,
     ) -> Result<Option<zed::serde_json::Value>> {
-        Ok(zed::settings::LspSettings::for_worktree(
-            language_server_id.as_ref(),
-            worktree,
-        )?
-        .settings)
+        Ok(
+            zed::settings::LspSettings::for_worktree(language_server_id.as_ref(), worktree)?
+                .settings,
+        )
     }
 }
 

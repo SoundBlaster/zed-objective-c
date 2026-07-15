@@ -3,15 +3,27 @@ name: Objective-C extension
 on:
   push:
     paths:
-      - "zed-objective-c-extension/**"
-      - ".zed/settings.json"
-      - "scripts/generate-compile-commands.sh"
+      - "Cargo.lock"
+      - "Cargo.toml"
+      - "extension.toml"
+      - "rust-toolchain.toml"
+      - "languages/**"
+      - "scripts/**"
+      - "snippets/**"
+      - "src/**"
+      - "test/**"
       - ".github/workflows/objective-c-extension.yml"
   pull_request:
     paths:
-      - "zed-objective-c-extension/**"
-      - ".zed/settings.json"
-      - "scripts/generate-compile-commands.sh"
+      - "Cargo.lock"
+      - "Cargo.toml"
+      - "extension.toml"
+      - "rust-toolchain.toml"
+      - "languages/**"
+      - "scripts/**"
+      - "snippets/**"
+      - "src/**"
+      - "test/**"
       - ".github/workflows/objective-c-extension.yml"
 
 jobs:
@@ -32,17 +44,10 @@ jobs:
         run: python3 -m pip install tomli
 
       - name: Validate extension
-        run: zed-objective-c-extension/scripts/test-extension.sh
-
-      - name: Validate project integration files
-        run: |
-          bash -n scripts/generate-compile-commands.sh
-          python3 -m json.tool .zed/settings.json >/dev/null
+        run: scripts/test-extension.sh
 
       - name: Check Rust formatting
-        working-directory: zed-objective-c-extension
         run: cargo fmt --check
 
       - name: Build Zed extension for WASI
-        working-directory: zed-objective-c-extension
         run: cargo check --locked --target wasm32-wasip2
