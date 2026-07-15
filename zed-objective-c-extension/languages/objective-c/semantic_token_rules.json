@@ -1,0 +1,14 @@
+[
+  {
+    "token_type": "interface",
+    "style": ["type"]
+  },
+  {
+    "token_type": "method",
+    "style": ["function"]
+  },
+  {
+    "token_type": "property",
+    "style": ["property"]
+  }
+]

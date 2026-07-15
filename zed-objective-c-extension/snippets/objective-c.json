@@ -1,0 +1,65 @@
+{
+  "Objective-C interface": {
+    "prefix": "objc-interface",
+    "body": [
+      "@interface ${1:ClassName} : ${2:NSObject}",
+      "",
+      "$0",
+      "",
+      "@end"
+    ],
+    "description": "Declare an Objective-C interface"
+  },
+  "Objective-C implementation": {
+    "prefix": "objc-implementation",
+    "body": [
+      "@implementation ${1:ClassName}",
+      "",
+      "$0",
+      "",
+      "@end"
+    ],
+    "description": "Declare an Objective-C implementation"
+  },
+  "Objective-C protocol": {
+    "prefix": "objc-protocol",
+    "body": [
+      "@protocol ${1:ProtocolName} <${2:NSObject}>",
+      "",
+      "$0",
+      "",
+      "@end"
+    ],
+    "description": "Declare an Objective-C protocol"
+  },
+  "Objective-C property": {
+    "prefix": "objc-property",
+    "body": "@property(nonatomic, ${1:strong}) ${2:id} ${3:name};$0",
+    "description": "Declare an Objective-C property"
+  },
+  "Objective-C instance method": {
+    "prefix": "objc-method",
+    "body": [
+      "- (${1:void})${2:methodName}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Define an Objective-C instance method"
+  },
+  "Objective-C class method": {
+    "prefix": "objc-class-method",
+    "body": [
+      "+ (${1:instancetype})${2:factoryMethod}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Define an Objective-C class method"
+  },
+  "Objective-C weak self": {
+    "prefix": "objc-weak-self",
+    "body": "__weak typeof(self) ${1:weakSelf} = self;$0",
+    "description": "Create a weak reference to self"
+  }
+}

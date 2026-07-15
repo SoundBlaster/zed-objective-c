@@ -1,0 +1,10 @@
+{
+  "file_types": {
+    "Objective-C": ["h"]
+  },
+  "languages": {
+    "Objective-C": {
+      "semantic_tokens": "combined"
+    }
+  }
+}

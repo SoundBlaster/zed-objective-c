@@ -1,0 +1,48 @@
+name: Objective-C extension
+
+on:
+  push:
+    paths:
+      - "zed-objective-c-extension/**"
+      - ".zed/settings.json"
+      - "scripts/generate-compile-commands.sh"
+      - ".github/workflows/objective-c-extension.yml"
+  pull_request:
+    paths:
+      - "zed-objective-c-extension/**"
+      - ".zed/settings.json"
+      - "scripts/generate-compile-commands.sh"
+      - ".github/workflows/objective-c-extension.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+          targets: wasm32-wasip2
+
+      - name: Install Tree-sitter CLI
+        run: cargo install tree-sitter-cli --version 0.24.7 --locked
+
+      - name: Install TOML parser for older Python
+        run: python3 -m pip install tomli
+
+      - name: Validate extension
+        run: zed-objective-c-extension/scripts/test-extension.sh
+
+      - name: Validate project integration files
+        run: |
+          bash -n scripts/generate-compile-commands.sh
+          python3 -m json.tool .zed/settings.json >/dev/null
+
+      - name: Check Rust formatting
+        working-directory: zed-objective-c-extension
+        run: cargo fmt --check
+
+      - name: Build Zed extension for WASI
+        working-directory: zed-objective-c-extension
+        run: cargo check --locked --target wasm32-wasip2
