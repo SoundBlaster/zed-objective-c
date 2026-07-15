@@ -26,6 +26,34 @@ references, and semantic highlighting.
 On macOS, Xcode or the Xcode Command Line Tools normally provides `clangd`.
 You do not need to copy an LSP configuration into Zed for the standard setup.
 
+### Agent-assisted setup
+
+Paste this prompt into a coding agent that can inspect your project and run
+terminal commands:
+
+```text
+Set up Objective-C support for Zed using
+https://github.com/SoundBlaster/zed-objective-c. Before changing anything,
+read README.md, extension.toml, and rust-toolchain.toml from that repository.
+Inspect my existing Zed and project settings and preserve unrelated values.
+Clone or update the extension in a stable local directory, verify the required
+tools, and follow the documented installation verification; do not install
+contributor-only test tools unless they are needed. If you can control Zed,
+install the repository root as a dev extension; otherwise give me the exact
+final Zed UI step. Add only the project-local Objective-C settings that apply
+to this project: ask before mapping every .h file to Objective-C, disable
+on-type formatting, and do not create or replace compile_commands.json unless
+the project needs it and you have explained how it will be generated. Report
+what you changed and how you verified the installation. Do not pipe remote
+scripts into a shell or overwrite existing configuration without showing the
+change.
+```
+
+This flow intentionally asks the agent to inspect the repository instead of
+running a `curl | sh` installer. Installing a development extension includes a
+Zed UI step, and reviewing commands before execution keeps project settings and
+toolchain changes explicit.
+
 ## Requirements and optional tools
 
 - Zed 1.11.3 or newer;
