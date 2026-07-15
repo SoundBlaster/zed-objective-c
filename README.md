@@ -1,7 +1,7 @@
 # Objective-C for Zed
 
-Development-stage Zed extension that adds Tree-sitter and clangd support for
-Objective-C (`.m`).
+Development-stage Zed extension that adds Tree-sitter syntax support and
+`clangd` semantic features for Objective-C (`.m`).
 
 ## Features
 
@@ -15,15 +15,36 @@ Objective-C (`.m`).
 - clangd completion, diagnostics, navigation, background indexing, and
   combined semantic highlighting.
 
-## Requirements
+## Quick start
+
+No project configuration is required for syntax highlighting, indentation,
+folding, outlines, text objects, or snippets. If `clangd` is available in
+`PATH`, the extension starts it automatically with Objective-C-friendly
+defaults and enables completion, diagnostics, hover, navigation, rename,
+references, and semantic highlighting.
+
+On macOS, Xcode or the Xcode Command Line Tools normally provides `clangd`.
+You do not need to copy an LSP configuration into Zed for the standard setup.
+
+## Requirements and optional tools
 
 - Zed 1.11.3 or newer;
-- Rust installed through `rustup` for development-extension builds;
-- `clangd` available in `PATH` for semantic features;
-- a `compile_commands.json` containing the real Xcode SDK and target flags.
+- `clangd` in `PATH` for semantic features;
+- Rust installed through `rustup` only when building or developing the
+  extension;
+- an accurate `compile_commands.json` is optional, but recommended for full
+  project-aware semantics in non-trivial Xcode projects.
 
-On macOS, installing Xcode or the Xcode Command Line Tools normally provides
-`clangd`.
+The Tree-sitter editor features continue to work when `clangd` is unavailable.
+
+| Goal | User action |
+| --- | --- |
+| Syntax highlighting and editor features | Install the extension; no configuration required. |
+| Basic semantic features | Ensure `clangd` is available in `PATH`. |
+| Accurate UIKit and project-wide semantics | Optionally provide `compile_commands.json`. |
+| Stop formatting while typing | Set `use_on_type_format` to `false` for Objective-C. |
+| Build the extension from source | Install Rust through `rustup`. |
+| Use a non-standard clangd binary | Add the troubleshooting override shown below. |
 
 ## Install as a development extension
 
@@ -90,21 +111,55 @@ as fully supported would misparse C++ constructs such as namespaces and
 templates. Until a combined Objective-C++ grammar is available, use Zed's C++
 mode for C++-heavy `.mm` files.
 
-## clangd and Xcode
+## clangd integration
 
-The extension starts `clangd` with Objective-C-friendly defaults, including
-background indexing and `#import` insertion. It does not hard-code an SDK,
-deployment target, header maps, or framework search paths: those must come from
-the application's `compile_commands.json`.
+### Automatic setup
 
-For an Xcode project, generate the compilation database from the project's real
-compiler invocations with a tool such as
-[`xcode-build-server`](https://github.com/SolaWing/xcode-build-server), and put
-`compile_commands.json` at the project or worktree root. Regenerate it after
-changing the scheme, SDK, target, or build settings, then restart the Objective-C
-language server in Zed.
+The extension finds `clangd` in `PATH` and starts it with:
 
-Override the clangd binary or arguments through Zed settings when necessary:
+- background indexing;
+- project-level `.clangd` configuration support;
+- detailed completion items;
+- `#import` insertion for accepted completions.
+
+This is enough to get started. Without project-specific compiler flags,
+`clangd` uses a fallback command and may still provide useful results for
+simple files. Missing frameworks, incorrect diagnostics, or incomplete
+cross-file navigation usually indicate that it needs the real build flags.
+
+### Accurate Xcode project semantics (optional)
+
+Xcode build settings determine the SDK, architecture, deployment target,
+framework search paths, header maps, preprocessor definitions, and ARC mode.
+For the most accurate completion, diagnostics, and indexing, provide those
+settings to `clangd` through a standard
+[`compile_commands.json`](https://clang.llvm.org/docs/JSONCompilationDatabase.html).
+
+The extension does not generate this file automatically. An Xcode workspace
+may contain several schemes, configurations, SDKs, and destinations, so there
+is no single build command the extension can safely choose on the user's
+behalf. Use an Xcode-compatible compilation-database generator that records the
+real compiler invocations, then place `compile_commands.json` in the project
+root, an ancestor of the source files, or a `build/` directory where `clangd`
+can discover it. Regenerate it after changing important build settings and
+restart the Objective-C language server in Zed.
+
+To confirm that the database was discovered, open Zed's language-server logs
+and look for a `clangd` message that names the loaded compilation database. If
+UIKit imports are unresolved or diagnostics disagree with Xcode, verify the
+database before changing the extension's language-server arguments.
+
+`xcode-build-server` is not required by this extension. It implements the Build
+Server Protocol for SourceKit-LSP and normally creates `buildServer.json`;
+`clangd` does not consume that file. See the official
+[`clangd` project setup documentation](https://clangd.llvm.org/installation.html#project-setup)
+for compilation-database discovery and fallback behavior.
+
+### Custom clangd binary (troubleshooting only)
+
+Do not add this configuration for a normal installation. Use it only when
+`clangd` is not in `PATH` or when you intentionally want to replace the
+extension's default arguments:
 
 ```json
 {
@@ -116,13 +171,17 @@ Override the clangd binary or arguments through Zed settings when necessary:
           "--background-index",
           "--enable-config",
           "--header-insertion=iwyu",
-          "--import-insertions"
+          "--import-insertions",
+          "--completion-style=detailed"
         ]
       }
     }
   }
 }
 ```
+
+When `binary.arguments` is present, it replaces the extension defaults rather
+than extending them.
 
 ## Development checks
 
