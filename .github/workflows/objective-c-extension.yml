@@ -43,6 +43,9 @@ jobs:
       - name: Install TOML parser for older Python
         run: python3 -m pip install tomli
 
+      - name: Check shell scripts
+        run: bash -n scripts/*.sh
+
       - name: Validate extension
         run: scripts/test-extension.sh
 

@@ -85,8 +85,23 @@ The Tree-sitter editor features continue to work when `clangd` is unavailable.
 > [!NOTE]
 > Zed compiles Rust-based dev extensions locally. Rust must be installed through
 > [`rustup`](https://rustup.rs/); a standalone Homebrew Rust installation is not
-> supported for this workflow. If the Zed log reports `failed to run rustc: No
-> such file or directory`, verify the toolchain in Terminal:
+> supported for this workflow. From the repository root, the setup helper can
+> inspect or prepare the required stable toolchain, `rustfmt`, and WASI target:
+>
+> ```sh
+> ./scripts/setup-rust.sh --check
+> ./scripts/setup-rust.sh
+> ```
+>
+> If `rustup` is missing, installation is an explicit opt-in. The script
+> downloads the official installer to a temporary file before executing it:
+>
+> ```sh
+> ./scripts/setup-rust.sh --install-rustup --verify
+> ```
+>
+> If the Zed log reports `failed to run rustc: No such file or directory`, the
+> following commands provide a manual diagnostic:
 >
 > ```sh
 > command -v rustup
