@@ -82,6 +82,29 @@ The Tree-sitter editor features continue to work when `clangd` is unavailable.
 4. Open `test/fixtures/sample.m` and verify that the language selector shows
    `Objective-C`.
 
+> [!NOTE]
+> Zed compiles Rust-based dev extensions locally. Rust must be installed through
+> [`rustup`](https://rustup.rs/); a standalone Homebrew Rust installation is not
+> supported for this workflow. If the Zed log reports `failed to run rustc: No
+> such file or directory`, verify the toolchain in Terminal:
+>
+> ```sh
+> command -v rustup
+> command -v rustc
+> rustup show active-toolchain
+> ```
+>
+> If `rustc` works in Terminal but Zed still cannot find it, fully quit Zed and
+> relaunch it from a shell that has loaded the Rust environment:
+>
+> ```sh
+> source ~/.cargo/env
+> zed --foreground
+> ```
+>
+> Rust is required for development-extension builds, not for normal installation
+> from the Zed Extension Gallery once the extension is published.
+
 If installation fails, run `zed: open log` and inspect the grammar or query
 error reported there.
 
